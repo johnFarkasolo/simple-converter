@@ -28,8 +28,9 @@ function App() {
   const [exchangeRate, setExchangeRate] = React.useState();
   const [amount, setAmount] = React.useState(1);
   const [amountInFromCurrency, setAmountInFromCurrency] = React.useState(true);
+  const [currencyToTable, setCurrencyToTable] = React.useState([]);
 
-  console.log(exchangeRate);
+  console.log(currencyToTable);
 
   let toAmount, fromAmount;
 
@@ -50,6 +51,7 @@ function App() {
         setFromCurrency(data.base);
         setToCurrency(firstCurrency);
         setExchangeRate(data.rates[firstCurrency]);
+        setCurrencyToTable(data.rates, ...Object.keys(data.rates));
       });
   }, []);
 
@@ -75,7 +77,7 @@ function App() {
     <Container maxWidth="lg" className={classes.root}>
       <Grid container spacing={3}>
         <Grid item xs={8}>
-          <CurrencyTable />
+          <CurrencyTable currencyToTable={currencyToTable} />
         </Grid>
         <Grid item xs={4}>
           <Paper className={classes.paper}>

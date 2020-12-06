@@ -3,8 +3,6 @@ import React from 'react';
 function CurrencyRow(props) {
   const { currencyOptions, selectedCurrency, onChangeCurrency, amount, onChangeAmount } = props;
 
-  console.log(amount);
-
   return (
     <>
       <input type="number" className="input" value={amount} onChange={onChangeAmount} />
