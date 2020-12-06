@@ -1,18 +1,36 @@
 import React from 'react';
-import './App.css';
-import CurrencyRow from './CurrencyRow';
-
+import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+import CurrencyRow from './components/CurrencyExcange/CurrencyRow';
+import CurrencyTable from './components/CurrencyTable/CurrencyTable';
+import { Container } from '@material-ui/core';
 const BASE_URL = 'https://api.exchangeratesapi.io/latest';
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    padding: theme.spacing(8),
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: 'center',
+  },
+}));
+
 function App() {
+  const classes = useStyles();
   const [currencyOptions, setCurrencyOptions] = React.useState([]);
   const [fromCurrency, setFromCurrency] = React.useState();
   const [toCurrency, setToCurrency] = React.useState();
   const [exchangeRate, setExchangeRate] = React.useState();
   const [amount, setAmount] = React.useState(1);
   const [amountInFromCurrency, setAmountInFromCurrency] = React.useState(true);
+  const [currencyToTable, setCurrencyToTable] = React.useState([]);
 
-  console.log(exchangeRate);
+  console.log(currencyToTable);
 
   let toAmount, fromAmount;
 
@@ -33,6 +51,7 @@ function App() {
         setFromCurrency(data.base);
         setToCurrency(firstCurrency);
         setExchangeRate(data.rates[firstCurrency]);
+        setCurrencyToTable(data.rates, ...Object.keys(data.rates));
       });
   }, []);
 
@@ -47,7 +66,7 @@ function App() {
   }
 
   React.useEffect(() => {
-    if (fromCurrency !== null && toCurrency !== null) {
+    if (fromCurrency != null && toCurrency != null) {
       fetch(`${BASE_URL}?base=${fromCurrency}&symbols=${toCurrency}`)
         .then((res) => res.json())
         .then((data) => setExchangeRate(data.rates[toCurrency]));
@@ -55,24 +74,33 @@ function App() {
   }, [fromCurrency, toCurrency]);
 
   return (
-    <div className="App">
-      <h1>Currency</h1>
-      <CurrencyRow
-        currencyOptions={currencyOptions}
-        selectedCurrency={fromCurrency}
-        onChangeCurrency={(e) => setFromCurrency(e.target.value)}
-        onChangeAmount={handleFromAmountChange}
-        amount={fromAmount}
-      />
-      <div className="equals"> = </div>
-      <CurrencyRow
-        currencyOptions={currencyOptions}
-        selectedCurrency={toCurrency}
-        onChangeCurrency={(e) => setToCurrency(e.target.value)}
-        onChangeAmount={handleToAmountChange}
-        amount={toAmount}
-      />
-    </div>
+    <Container maxWidth="lg" className={classes.root}>
+      <Grid container spacing={3}>
+        <Grid item xs={8}>
+          <CurrencyTable currencyToTable={currencyToTable} />
+        </Grid>
+        <Grid item xs={4}>
+          <Paper className={classes.paper}>
+            <h1>Currency</h1>
+            <CurrencyRow
+              currencyOptions={currencyOptions}
+              selectedCurrency={fromCurrency}
+              onChangeCurrency={(e) => setFromCurrency(e.target.value)}
+              onChangeAmount={handleFromAmountChange}
+              amount={fromAmount}
+            />
+            <div className="equals"> = </div>
+            <CurrencyRow
+              currencyOptions={currencyOptions}
+              selectedCurrency={toCurrency}
+              onChangeCurrency={(e) => setToCurrency(e.target.value)}
+              onChangeAmount={handleToAmountChange}
+              amount={toAmount}
+            />
+          </Paper>
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
 
